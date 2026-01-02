@@ -1,0 +1,35 @@
+{
+  "a": {
+    "ww": [
+      {
+        "id": "fJ9rUzIMcZQ",
+        "title": "Queen – Bohemian Rhapsody (Official Video Remastered)",
+        "img": "https://i.ytimg.com/vi/fJ9rUzIMcZQ/mqdefault.jpg",
+        "duration": "6:00",
+        "rating": 2
+      },
+      {
+        "id": "/uploads/1767059269809-1765348154410-Post Malone, Swae Lee - Sunflower.mp3",
+        "title": "1765348154410-Post Malone, Swae Lee - Sunflower",
+        "img": "https://cdn-icons-png.flaticon.com/512/10783/10783145.png",
+        "isLocal": true,
+        "rating": 1
+      },
+      {
+        "id": "hLQl3WQQoQ0",
+        "title": "Adele - Someone Like You (Official Music Video)",
+        "img": "https://i.ytimg.com/vi/hLQl3WQQoQ0/mqdefault.jpg",
+        "duration": "4:45",
+        "rating": 4
+      }
+    ],
+    "''": [
+      {
+        "id": "X-yIEMduRXk",
+        "title": "Adele - Easy On Me (Official Lyric Video)",
+        "img": "https://i.ytimg.com/vi/X-yIEMduRXk/mqdefault.jpg",
+        "duration": "3:46"
+      }
+    ]
+  }
+}
