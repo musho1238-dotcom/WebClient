@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Music</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background-color: #f8f9fa;
+        }
+
+        /* --- Header --- */
+        .user-header {
+            background-color: #333;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #ddd;
+            text-decoration: none;
+            margin-right: 15px;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: white;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+        }
+
+        /* --- Search & Layout --- */
+        .main-content {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        input {
+            flex-grow: 1;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button#searchBtn {
+            padding: 12px 25px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        button#searchBtn:hover {
+            background-color: #c82333;
+        }
+
+        /* --- Player --- */
+        #videoPlayerContainer {
+            margin-bottom: 30px;
+            display: none;
+            background: #000;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        iframe {
+            width: 100%;
+            height: 450px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        /* --- Results --- */
+        #resultsArea {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        /* --- Cards --- */
+        .video-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .thumb-container {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .thumb-container img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .duration-badge {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 2px 6px;
+            font-size: 12px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .card-body {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            line-height: 1.4em;
+            height: 2.8em;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            /* Standard property for compatibility */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: help;
+        }
+
+        .card-stats {
+            font-size: 13px;
+            color: #606060;
+            margin-bottom: 12px;
+        }
+
+        .card-actions {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .action-btn {
+            background: white;
+            border: 1px solid #ccc;
+            padding: 6px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .play-btn {
+            color: #28a745;
+            border-color: #28a745;
+        }
+
+        .play-btn:hover {
+            background-color: #e9f7ef;
+        }
+
+        /* Save Button Styles */
+        .fav-btn {
+            color: #ffc107;
+            border-color: #ffc107;
+        }
+
+        .fav-btn:hover {
+            background-color: #fffdf5;
+        }
+
+        .fav-btn.saved {
+            color: #6c757d;
+            border-color: #6c757d;
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
+
+        /* --- MODAL STYLES --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-box {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            width: 350px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 10px 0;
+            color: #777;
+            font-size: 12px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .cancel-btn {
+            background: #ccc;
+        }
+
+        .save-confirm-btn {
+            background: #007bff;
+            color: white;
+        }
+
+        /* --- TOAST --- */
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1001;
+            right: 30px;
+            bottom: 30px;
+            font-size: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 4.5s;
+        }
+
+        .toast a {
+            color: #ffc107;
+            text-decoration: underline;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+
+        @keyframes fadein {
+            from {
+                bottom: 0;
+                opacity: 0;
+            }
+
+            to {
+                bottom: 30px;
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeout {
+            from {
+                bottom: 30px;
+                opacity: 1;
+            }
+
+            to {
+                bottom: 0;
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="user-header">
+        <nav class="nav-links">
+            <a href="search.html" style="text-decoration: underline;">Search</a>
+            <a href="playlists.html">My Playlists</a>
+        </nav>
+        <div class="user-info" id="headerUserInfo" style="display: none;">
+            <span id="welcomeMessage"></span>
+            <img id="userImage" class="profile-img" src="">
+        </div>
+    </header>
+
+    <div class="main-content">
+        <h1>Search YouTube</h1>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search for artist or song...">
+            <button id="searchBtn">Search</button>
+        </div>
+
+        <div id="videoPlayerContainer"></div>
+        <div id="resultsArea"></div>
+    </div>
+
+    <div id="saveModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3>Add to Playlist</h3>
+            <p id="modalVideoTitle"
+                style="font-size: 12px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            </p>
+
+            <div class="form-group">
+                <label>Choose Existing:</label>
+                <select id="playlistSelect">
+                    <option value="">-- Select Playlist --</option>
+                </select>
+            </div>
+            <div class="divider">- OR -</div>
+            <div class="form-group">
+                <label>Create New:</label>
+                <input type="text" id="newPlaylistInput" placeholder="Enter playlist name...">
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn cancel-btn" onclick="closeModal()">Cancel</button>
+                <button class="modal-btn save-confirm-btn" onclick="confirmSave()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">
+        Saved successfully! <a href="playlists.html">Go to Playlists</a>
+    </div>
+    <script src="search.js"></script>
+</body>
+
+</html>
