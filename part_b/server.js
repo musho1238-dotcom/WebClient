@@ -200,7 +200,6 @@ app.post('/api/upload', upload.single('mp3file'), (req, res) => {
         return res.status(400).json({ error: "No file uploaded" });
     }
 
-
     // Return the path relative to the client folder
     const fileUrl = `/uploads/${req.file.filename}`;
     res.json({ filePath: fileUrl, originalName: req.file.originalname });
